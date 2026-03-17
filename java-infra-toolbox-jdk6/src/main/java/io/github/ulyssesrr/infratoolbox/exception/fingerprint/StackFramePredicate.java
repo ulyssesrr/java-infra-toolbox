@@ -1,5 +1,5 @@
 package io.github.ulyssesrr.infratoolbox.exception.fingerprint;
 
 public interface StackFramePredicate {
-    boolean test(StackTraceElement element);
+    boolean test(StackTraceElement element, Throwable throwable);
 }

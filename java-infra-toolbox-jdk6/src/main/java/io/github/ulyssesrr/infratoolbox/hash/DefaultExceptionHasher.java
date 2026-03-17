@@ -1,8 +1,9 @@
 package io.github.ulyssesrr.infratoolbox.hash;
 
 import io.github.ulyssesrr.infratoolbox.exception.fingerprint.ExceptionHasher;
-import io.github.ulyssesrr.infratoolbox.exception.fingerprint.MessageNormalizer;
+import io.github.ulyssesrr.infratoolbox.exception.fingerprint.ThrowableMessageResolver;
 import io.github.ulyssesrr.infratoolbox.exception.fingerprint.StackFramePredicate;
+import io.github.ulyssesrr.infratoolbox.exception.fingerprint.ThrowablePredicate;
 import lombok.Builder;
 
 @Builder(toBuilder = true)
@@ -15,10 +16,10 @@ public class DefaultExceptionHasher implements ExceptionHasher {
     private final boolean includeMethodName = true;
 
     @Builder.Default
-    private final boolean includeMessage = false;
+    private final ThrowablePredicate messagePredicate = null;
 
     @Builder.Default
-    private final MessageNormalizer messageNormalizer = null;
+    private final ThrowableMessageResolver messageResolver = null;
 
     @Builder.Default
     private final StackFramePredicate framePredicate = null;
@@ -58,7 +59,7 @@ public class DefaultExceptionHasher implements ExceptionHasher {
 
             for (int i = 0; i < stack.length && count < stackFrames; i++) {
                 StackTraceElement e = stack[i];
-                if (framePredicate != null && !framePredicate.test(e)) {
+                if (framePredicate != null && !framePredicate.test(e, throwable)) {
                     continue;
                 }
 
@@ -78,12 +79,12 @@ public class DefaultExceptionHasher implements ExceptionHasher {
             }
         }
 
-        if (includeMessage) {
-            String msg = throwable.getMessage();
-            if (msg != null) {
-                if (messageNormalizer != null) {
-                    hasher.putString(messageNormalizer.normalize(msg));
+        if (messagePredicate != null) {
+            if (messagePredicate.test(throwable)) {
+                if (messageResolver != null) {
+                    hasher.putString(messageResolver.getMessage(throwable));
                 } else {
+                    String msg = throwable.getMessage() != null ? throwable.getMessage() : "";
                     hasher.putString(msg);
                 }
             }
