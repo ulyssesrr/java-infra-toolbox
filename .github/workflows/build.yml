@@ -14,5 +14,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 8
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
       - name: Build
-        run: mvn -B clean verify
+        run: mvn --batch-mode clean verify
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
