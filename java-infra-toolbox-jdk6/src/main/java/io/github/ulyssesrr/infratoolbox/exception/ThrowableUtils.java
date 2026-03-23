@@ -11,18 +11,21 @@ public final class ThrowableUtils {
      *
      * @param throwable The throwable to get the root cause for.
      * @param maxDepth Maximum depth to search for the root cause.
-     * @return the root cause of {@code throwable}, or {@code null} if there is no root cause or it is not found within the specified depth.
+     * @return the root cause of {@code throwable}, possibly itself, or {@code null} if it's not found within the specified depth.
      * @throws NullPointerException if {@code throwable} argument is null.
      */
     public static Throwable getRootCause(@NonNull Throwable throwable, int maxDepth) {
+        Throwable root = throwable;
+
         Throwable cause;
-        for (int i = 0; (cause = throwable.getCause()) != null && i < maxDepth; i++) {
-            throwable = cause;
+        for (int i = 0; (cause = root.getCause()) != null && i < maxDepth; i++) {
+            root = cause;
         }
 
-        if (throwable.getCause() != null) {
+        if (root.getCause() != null) {
             return null;
         }
-        return throwable;
+
+        return root;
     }
 }

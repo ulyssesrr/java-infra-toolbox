@@ -6,13 +6,13 @@ public class NoopLoggerAdapter implements LoggerAdapter {
 
     public void removeMdc(String key) {}
 
-    public void error(String message, Throwable throwable) {
+    @Override
+    public void info(String message, Throwable throwable) {}
 
-        System.err.println("No logger implementation available");
-        if (throwable != null) {
-            throwable.printStackTrace();
-        }
+    @Override
+    public void warn(String message, Throwable throwable) {}
 
-    }
+    @Override
+    public void error(String message, Throwable throwable) {}
 
 }

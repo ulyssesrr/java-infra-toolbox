@@ -48,6 +48,26 @@ public class TestJdkSemanticVersionParser implements WithAssertions {
     }
 
     @Test
+    public void testParseMajorOnly() {
+        SemanticVersion version = parser.parse("1");
+        assertThat(version.getOriginalVersion()).isEqualTo("1");
+        assertThat(version.getMajor()).isEqualTo(1);
+        assertThat(version.getMinor()).isEqualTo(0);
+        assertThat(version.getPatch()).isEqualTo(0);
+        assertThat(version.getSuffix()).isNull();
+    }
+
+    @Test
+    public void testParseMajorOnlyWithDot() {
+        SemanticVersion version = parser.parse("1.");
+        assertThat(version.getOriginalVersion()).isEqualTo("1.");
+        assertThat(version.getMajor()).isEqualTo(1);
+        assertThat(version.getMinor()).isEqualTo(0);
+        assertThat(version.getPatch()).isEqualTo(0);
+        assertThat(version.getSuffix()).isNull();
+    }
+
+    @Test
     public void testParseMajorMinorOnly() {
         SemanticVersion version = parser.parse("1.0");
         assertThat(version.getOriginalVersion()).isEqualTo("1.0");
@@ -58,13 +78,23 @@ public class TestJdkSemanticVersionParser implements WithAssertions {
     }
 
     @Test
-    public void testParseMajorOnly() {
-        SemanticVersion version = parser.parse("1");
-        assertThat(version.getOriginalVersion()).isEqualTo("1");
+    public void testParseMajorMinorOnlyWithDot() {
+        SemanticVersion version = parser.parse("1.0.");
+        assertThat(version.getOriginalVersion()).isEqualTo("1.0.");
         assertThat(version.getMajor()).isEqualTo(1);
         assertThat(version.getMinor()).isEqualTo(0);
         assertThat(version.getPatch()).isEqualTo(0);
         assertThat(version.getSuffix()).isNull();
+    }
+
+    @Test
+    public void testParseMajorMinorSuffixOnly() {
+        SemanticVersion version = parser.parse("1.0.A");
+        assertThat(version.getOriginalVersion()).isEqualTo("1.0.A");
+        assertThat(version.getMajor()).isEqualTo(1);
+        assertThat(version.getMinor()).isEqualTo(0);
+        assertThat(version.getPatch()).isEqualTo(0);
+        assertThat(version.getSuffix()).isEqualTo("A");
     }
 
     @Test
@@ -85,6 +115,16 @@ public class TestJdkSemanticVersionParser implements WithAssertions {
         assertThat(version.getMinor()).isEqualTo(0);
         assertThat(version.getPatch()).isEqualTo(0);
         assertThat(version.getSuffix()).isEqualTo("build.123");
+    }
+
+    @Test
+    public void testParseEmptyPatchWithBuildNumberSuffix() {
+        SemanticVersion version = parser.parse("1.0.0+123");
+        assertThat(version.getOriginalVersion()).isEqualTo("1.0.0+123");
+        assertThat(version.getMajor()).isEqualTo(1);
+        assertThat(version.getMinor()).isEqualTo(0);
+        assertThat(version.getPatch()).isEqualTo(0);
+        assertThat(version.getSuffix()).isEqualTo("123");
     }
 
     @Test

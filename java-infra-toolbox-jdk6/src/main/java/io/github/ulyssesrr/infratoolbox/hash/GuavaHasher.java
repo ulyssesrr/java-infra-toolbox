@@ -1,5 +1,8 @@
 package io.github.ulyssesrr.infratoolbox.hash;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.hash.HashCode;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -9,11 +12,19 @@ import lombok.RequiredArgsConstructor;
 
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
-public class GuavaHasher implements StatefulHasher {
+public class GuavaHasher extends AbstractStatefulHasher {
 
     @NonNull
     @Builder.Default
     public final Hasher hasher = Hashing.murmur3_128().newHasher();
+    private final Supplier<HashCode> hashCodeSupplier = Suppliers.memoize(new Supplier<HashCode>() {
+
+        @Override
+        public HashCode get() {
+            return hasher.hash();
+        }
+
+    });
 
     public static StatefulHasherFactory getDefaultFactory() {
         return Holder.INSTANCE;
@@ -29,78 +40,58 @@ public class GuavaHasher implements StatefulHasher {
     }
 
     @Override
-    public GuavaHasher putByte(byte b) {
+    protected void doPutByte(byte b) {
         hasher.putByte(b);
-        return this;
     }
 
     @Override
-    public GuavaHasher putBytes(byte[] bytes) {
+    protected void doPutBytes(@NonNull byte[] bytes) {
         hasher.putBytes(bytes);
-        return this;
     }
 
     @Override
-    public GuavaHasher putShort(short s) {
+    protected void doPutShort(short s) {
         hasher.putShort(s);
-        return this;
     }
 
     @Override
-    public GuavaHasher putInt(int i) {
+    protected void doPutInt(int i) {
         hasher.putInt(i);
-        return this;
     }
 
     @Override
-    public GuavaHasher putLong(long l) {
+    protected void doPutLong(long l) {
         hasher.putLong(l);
-        return this;
     }
 
-    /**
-     * Equivalent to {@code putInt(Float.floatToRawIntBits(f))}.
-     */
     @Override
-    public GuavaHasher putFloat(float f) {
+    protected void doPutFloat(float f) {
         hasher.putFloat(f);
-        return this;
     }
 
-    /**
-     * Equivalent to {@code putLong(Double.doubleToRawLongBits(d))}.
-     */
     @Override
-    public GuavaHasher putDouble(double d) {
+    protected void doPutDouble(double d) {
         hasher.putDouble(d);
-        return this;
     }
 
     @Override
-    public GuavaHasher putBoolean(boolean b) {
+    protected void doPutBoolean(boolean b) {
         hasher.putBoolean(b);
-        return this;
     }
 
     @Override
-    public GuavaHasher putChar(char c) {
+    protected void doPutChar(char c) {
         hasher.putChar(c);
-        return this;
     }
 
     @Override
-    public GuavaHasher putString(String string) {
-        final int length = string.length();
-        for (int i = 0; i < length; i++) {
-            char c = string.charAt(i);
-            hasher.putChar(c);
-        }
-        return this;
+    protected void doPutString(@NonNull String string) {
+        hasher.putUnencodedChars(string);
     }
 
     @Override
     public String hash() {
-        return hasher.hash().toString();
+        return hashCodeSupplier.get().toString();
     }
 
 }

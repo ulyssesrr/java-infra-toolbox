@@ -22,6 +22,19 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
                 throw new RuntimeException("Message #" + counter.getAndIncrement());
             }
         }
+
+        public Throwable createChain(int causalChainLength) {
+            Throwable cause = null;
+            for (int i = 0; i < causalChainLength; i++) {
+                String message = "Exception #" + i;
+                if (i == 0) {
+                    message += " (ROOT)";
+                }
+                RuntimeException e = new RuntimeException(message, cause);
+                cause = e;
+            }
+            return new RuntimeException("Top", cause);
+        }
     }
 
     @Test
@@ -30,8 +43,6 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
 
         Exception[] exceptions = new Exception[2];
 
-
-
         Thread thread1 = new Thread(() -> {
             try {
                 ExceptionThrower et = new ExceptionThrower();
@@ -58,7 +69,7 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
         thread1.join();
         thread2.join();
 
-        assertThat(fingerprinter.fingerprintOf(exceptions[0])).isEqualTo(fingerprinter.fingerprintOf(exceptions[1]));
+        assertThat(fingerprinter.fingerprint(exceptions[0])).isEqualTo(fingerprinter.fingerprint(exceptions[1]));
     }
 
     @Test
@@ -67,8 +78,6 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
 
         Exception[] exceptions = new Exception[2];
 
-
-
         Thread thread1 = new Thread(() -> {
             try {
                 ExceptionThrower et = new ExceptionThrower();
@@ -95,6 +104,32 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
         thread1.join();
         thread2.join();
 
-        assertThat(fingerprinter.fingerprintOf(exceptions[0])).isEqualTo(fingerprinter.fingerprintOf(exceptions[1]));
+        assertThat(fingerprinter.fingerprint(exceptions[0])).isEqualTo(fingerprinter.fingerprint(exceptions[1]));
+    }
+
+    @Test
+    public void testRootCauseIncluded() {
+        Throwable e = new ExceptionThrower().createChain(2);
+        e.printStackTrace();
+
+
+        DefaultExceptionFingerprinter fingerprinterWithRoot = DefaultExceptionFingerprinter.builder()
+                .causalChainDepthLimit(1)
+                .ensureRootCauseIncluded(true)
+                .build();
+
+        DefaultExceptionFingerprinter fingerprinterWithDepth = DefaultExceptionFingerprinter.builder()
+                .causalChainDepthLimit(2)
+                .ensureRootCauseIncluded(false)
+                .build();
+
+        assertThat(fingerprinterWithRoot.fingerprint(e)).isEqualTo(fingerprinterWithDepth.fingerprint(e));
+
+        DefaultExceptionFingerprinter fingerprinterWithBoth = DefaultExceptionFingerprinter.builder()
+                .causalChainDepthLimit(2)
+                .ensureRootCauseIncluded(true)
+                .build();
+
+        assertThat(fingerprinterWithRoot.fingerprint(e)).isEqualTo(fingerprinterWithBoth.fingerprint(e));
     }
 }

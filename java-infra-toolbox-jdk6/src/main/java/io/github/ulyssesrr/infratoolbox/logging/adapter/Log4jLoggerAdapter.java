@@ -1,29 +1,27 @@
 package io.github.ulyssesrr.infratoolbox.logging.adapter;
 
-import org.slf4j.MDC;
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RequiredArgsConstructor
-public class Slf4jLoggerAdapter implements LoggerAdapter {
+public class Log4jLoggerAdapter implements LoggerAdapter {
 
     @NonNull
     private final Logger logger;
 
-    public Slf4jLoggerAdapter(String loggerName) {
-        this(LoggerFactory.getLogger(loggerName));
+    public Log4jLoggerAdapter(String loggerName) {
+        this(Logger.getLogger(loggerName));
     }
 
-    public Slf4jLoggerAdapter(Class<?> clazz) {
-        this(LoggerFactory.getLogger(clazz));
+    public Log4jLoggerAdapter(Class<?> clazz) {
+        this(Logger.getLogger(clazz));
     }
 
     public void putMdc(String key, Object value) {
-        MDC.put(key, String.valueOf(value));
+        MDC.put(key, value);
     }
 
     public void removeMdc(String key) {

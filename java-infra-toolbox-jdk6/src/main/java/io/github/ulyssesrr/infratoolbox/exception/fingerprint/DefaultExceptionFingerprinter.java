@@ -25,16 +25,16 @@ public class DefaultExceptionFingerprinter implements ExceptionFingerprinter {
     private final ExceptionHasher exceptionHasher = DefaultExceptionHasher.getInstance();
 
     @Builder.Default
-    private final int includeCausalChainDepth = 128;
+    private final int causalChainDepthLimit = 128;
 
     @Builder.Default
-    private final boolean includeRootCause = true;
+    private final boolean ensureRootCauseIncluded = true;
 
     @Builder.Default
     private final int maxRootCauseSearchDepth = 128;
 
-    @Builder.Default
-    private final LoggerAdapter loggerAdapter = new AutoDetectLoggerAdapter();
+    @NonNull
+    private final LoggerAdapter loggerAdapter = new AutoDetectLoggerAdapter(DefaultExceptionFingerprinter.class);
 
     public static DefaultExceptionFingerprinter getInstance() {
         return Holder.INSTANCE;
@@ -44,21 +44,21 @@ public class DefaultExceptionFingerprinter implements ExceptionFingerprinter {
         private static final DefaultExceptionFingerprinter INSTANCE = DefaultExceptionFingerprinter.builder().build();
     }
 
-    public String fingerprintOf(Throwable throwable) {
+    public String fingerprint(Throwable throwable) {
         StatefulHasher hasher = hasherFactory.create();
         try {
             exceptionHasher.hash(hasher, throwable, 0);
 
-            Throwable target = throwable;
-            for (int i = 0; (target = target.getCause()) != null && i < includeCausalChainDepth; i++) {
-                int depth = target.getCause() == null ? -1 : i + 1;
-                exceptionHasher.hash(hasher, throwable, depth);
+            Throwable current = throwable;
+            for (int i = 0; i < causalChainDepthLimit && (current = current.getCause()) != null; i++) {
+                int depth = current.getCause() == null ? -1 : i + 1;
+                exceptionHasher.hash(hasher, current, depth);
             }
 
-            boolean rootAlreadyIncluded = target.getCause() == null;
-            if (includeRootCause && rootAlreadyIncluded) {
-                target = ThrowableUtils.getRootCause(target, maxRootCauseSearchDepth);
-                exceptionHasher.hash(hasher, target, -1);
+            boolean rootAlreadyIncluded = current.getCause() == null;
+            if (ensureRootCauseIncluded && !rootAlreadyIncluded) {
+                current = ThrowableUtils.getRootCause(current, maxRootCauseSearchDepth);
+                exceptionHasher.hash(hasher, current, -1);
             }
         } catch (Throwable t) {
             if (loggerAdapter != null) {

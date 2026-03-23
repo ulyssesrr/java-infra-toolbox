@@ -30,22 +30,22 @@ public enum JdkSemanticVersionParser implements SemanticVersionParser {
                     String patchStr = version.substring(secondSepPosPlus1);
 
                     final int patchStrLenght = patchStr.length();
-                    int nonDigitPos = 0;
-                    while (nonDigitPos < patchStrLenght && Character.isDigit(patchStr.charAt(nonDigitPos))) {
-                        nonDigitPos++;
+                    int nonDigitSuffixPos = 0;
+                    while (nonDigitSuffixPos < patchStrLenght && Character.isDigit(patchStr.charAt(nonDigitSuffixPos))) {
+                        nonDigitSuffixPos++;
                     }
 
-                    if (nonDigitPos == 0) {
+                    if (nonDigitSuffixPos == 0) {
                         patch = 0;
                         suffix = patchStr;
                     } else {
-                        patch = Integer.parseInt(patchStr.substring(0, nonDigitPos));
+                        patch = Integer.parseInt(patchStr.substring(0, nonDigitSuffixPos));
 
                         // ignore separator
-                        nonDigitPos++;
+                        nonDigitSuffixPos++;
 
-                        if (nonDigitPos < patchStrLenght) {
-                            suffix = patchStr.substring(nonDigitPos);
+                        if (nonDigitSuffixPos < patchStrLenght) {
+                            suffix = patchStr.substring(nonDigitSuffixPos);
                         } else {
                             suffix = null;
                         }

@@ -5,11 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
-public class JdkHasher32 implements StatefulHasher {
+public class JdkHasher32 extends AbstractStatefulHasher {
 
     private final List<Object> hashing = new LinkedList<Object>();
 
@@ -27,63 +28,53 @@ public class JdkHasher32 implements StatefulHasher {
     }
 
     @Override
-    public StatefulHasher putByte(byte b) {
+    protected void doPutByte(byte b) {
         hashing.add(b);
-        return this;
     }
 
     @Override
-    public StatefulHasher putBytes(byte[] bytes) {
+    protected void doPutBytes(@NonNull byte[] bytes) {
         hashing.add(bytes);
-        return this;
     }
 
     @Override
-    public StatefulHasher putShort(short s) {
+    protected void doPutShort(short s) {
         hashing.add(s);
-        return this;
     }
 
     @Override
-    public StatefulHasher putInt(int i) {
+    protected void doPutInt(int i) {
         hashing.add(i);
-        return this;
     }
 
     @Override
-    public StatefulHasher putLong(long l) {
+    protected void doPutLong(long l) {
         hashing.add(l);
-        return this;
     }
 
     @Override
-    public StatefulHasher putFloat(float f) {
+    protected void doPutFloat(float f) {
         hashing.add(f);
-        return this;
     }
 
     @Override
-    public StatefulHasher putDouble(double d) {
+    protected void doPutDouble(double d) {
         hashing.add(d);
-        return this;
     }
 
     @Override
-    public StatefulHasher putBoolean(boolean b) {
+    protected void doPutBoolean(boolean b) {
         hashing.add(b);
-        return this;
     }
 
     @Override
-    public StatefulHasher putChar(char c) {
+    protected void doPutChar(char c) {
         hashing.add(c);
-        return this;
     }
 
     @Override
-    public StatefulHasher putString(String string) {
+    protected void doPutString(@NonNull String string) {
         hashing.add(string);
-        return this;
     }
 
     @Override
