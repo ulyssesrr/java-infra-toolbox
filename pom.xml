@@ -28,14 +28,6 @@
     </developer>
   </developers>
 
-  <distributionManagement>
-    <repository>
-      <id>ossrh</id>
-      <name>Central Repository OSSRH</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <scm>
     <connection>scm:git:git://github.com/ulyssesrr/java-infra-toolbox.git</connection>
     <developerConnection>scm:git:ssh://github.com:ulyssesrr/java-infra-toolbox.git</developerConnection>
@@ -144,6 +136,10 @@
           <artifactId>central-publishing-maven-plugin</artifactId>
           <version>0.10.0</version>
           <extensions>true</extensions>
+          <configuration>
+            <autoPublish>true</autoPublish>
+            <waitUntil>published</waitUntil>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
