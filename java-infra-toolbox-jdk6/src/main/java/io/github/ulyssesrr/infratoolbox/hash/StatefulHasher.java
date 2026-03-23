@@ -12,19 +12,10 @@ public interface StatefulHasher {
 
   StatefulHasher putLong(Long l);
 
-  /**
-   * Equivalent to {@code putInt(Float.floatToRawIntBits(f))}.
-   */
   StatefulHasher putFloat(Float f);
 
-  /**
-   * Equivalent to {@code putLong(Double.doubleToRawLongBits(d))}.
-   */
   StatefulHasher putDouble(Double d);
 
-  /**
-   * Equivalent to {@code putByte(b ? (byte) 1 : (byte) 0)}.
-   */
   StatefulHasher putBoolean(Boolean b);
 
   StatefulHasher putChar(Character c);

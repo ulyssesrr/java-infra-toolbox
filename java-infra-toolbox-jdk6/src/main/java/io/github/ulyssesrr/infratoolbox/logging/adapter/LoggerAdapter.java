@@ -10,22 +10,20 @@ import lombok.NonNull;
  * (Mapped Diagnostic Context) support. It allows applications to log messages at different
  * severity levels along with associated exceptions.</p>
  *
- * <p>Implementations of this interface handle the specifics of different logging frameworks:
+ * <p>Implementations of this interface handle the specifics of different logging frameworks:</p>
  * <ul>
  *   <li>{@link io.github.ulyssesrr.infratoolbox.logging.adapter.Slf4jLoggerAdapter} - for SLF4J</li>
  *   <li>{@link io.github.ulyssesrr.infratoolbox.logging.adapter.Log4jLoggerAdapter} - for Log4j 1.x</li>
  *   <li>{@link io.github.ulyssesrr.infratoolbox.logging.adapter.NoopLoggerAdapter} - no-op implementation</li>
  * </ul>
- * </p>
  *
- * <p>Usage example:
+ * <p>Usage example:</p>
  * <pre>
  * LoggerAdapter logger = new Slf4jLoggerAdapter(MyClass.class);
  * logger.putMdc("requestId", request.getId());
  * logger.error("Failed to process request", exception);
  * logger.removeMdc("requestId");
  * </pre>
- * </p>
  *
  * @author Ulysses R. Ribeiro
  * @see io.github.ulyssesrr.infratoolbox.logging.MdcScope

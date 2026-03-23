@@ -8,7 +8,7 @@ import lombok.NonNull;
  *
  * <p>This interface provides a way to convert semantic versions into values that can be
  * compared and ordered. The encoding preserves the semantic version ordering rules:
- * MAJOR version > MINOR version > PATCH version.</p>
+ * MAJOR version &gt; MINOR version &gt; PATCH version.</p>
  *
  * <p>The encoded values maintain natural ordering, meaning:</p>
  * <ul>
@@ -25,7 +25,7 @@ import lombok.NonNull;
  * // encoded can be used for comparison, storage, or sorting
  * }</pre>
  *
- * @param <T> the type of the encoded value, must implement {@link Comparable}
+ * @param <T> the type of the encoded value, must implement {@code Comparable<T>}
  * @author Ulysses R. Ribeiro
  * @see SemanticVersion
  * @see SemverIntEncoder

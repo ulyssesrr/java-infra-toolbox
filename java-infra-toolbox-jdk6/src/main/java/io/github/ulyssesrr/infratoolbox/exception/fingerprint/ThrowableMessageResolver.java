@@ -1,13 +1,16 @@
 package io.github.ulyssesrr.infratoolbox.exception.fingerprint;
 
+import lombok.NonNull;
+
 public interface ThrowableMessageResolver {
 
     /**
-     * Resolves the message of the given throwable.
+     * Resolves a human-readable message from the given {@link Throwable}.
      *
-     * @param throwable
-     * @return Exception message, cannot be null.
+     * @param throwable the exception to extract the message from, must not be
+     *                  {@code null}
+     * @return the resolved exception message (never {@code null})
      */
-    String getMessage(Throwable throwable);
+    String getMessage(@NonNull Throwable throwable);
 
 }
