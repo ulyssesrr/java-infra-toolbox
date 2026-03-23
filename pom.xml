@@ -10,6 +10,36 @@
   <packaging>pom</packaging>
 
   <name>Java Infra Toolbox</name>
+  <description>Utilities for infrastructure-level Java concerns</description>
+  <url>https://github.com/ulyssesrr/java-infra-toolbox</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>ulyssesrr</id>
+      <name>Ulysses Ribeiro</name>
+      <url>https://github.com/ulyssesrr</url>
+    </developer>
+  </developers>
+
+  <distributionManagement>
+    <repository>
+      <id>central</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <scm>
+    <connection>scm:git:git://github.com/ulyssesrr/java-infra-toolbox.git</connection>
+    <developerConnection>scm:git:ssh://github.com:ulyssesrr/java-infra-toolbox.git</developerConnection>
+    <url>https://github.com/ulyssesrr/java-infra-toolbox</url>
+  </scm>
 
   <modules>
     <module>java-infra-toolbox-jdk6</module>
@@ -18,11 +48,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    
-		<maven.compiler.source>${java.version}</maven.compiler.source>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
-		<maven.compiler.testSource>${java.test.version}</maven.compiler.testSource>
-		<maven.compiler.testTarget>${java.test.version}</maven.compiler.testTarget>
+
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.testSource>${java.test.version}</maven.compiler.testSource>
+    <maven.compiler.testTarget>${java.test.version}</maven.compiler.testTarget>
 
     <mockito.version>4.11.0</mockito.version>
   </properties>
@@ -58,4 +88,63 @@
     </dependencies>
   </dependencyManagement>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Source JAR -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.4.0</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <!-- Javadoc -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.12.0</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <!-- GPG Signing -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>3.2.8</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <!-- Publish -->
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.10.0</version>
+          <extensions>true</extensions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
