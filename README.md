@@ -91,23 +91,6 @@ try {
 }
 ```
 
-### Semantic Version
-
-```java
-import io.github.ulyssesrr.infratoolbox.semver.SemanticVersion;
-import io.github.ulyssesrr.infratoolbox.semver.encoder.SemverStringEncoder;
-
-SemanticVersion version = new SemanticVersion("2.1.0-beta.1", 2, 1, 0, "beta.1");
-
-// Compare versions
-if (version.getMajor() > 1) {
-    // major version change
-}
-
-// Encode for storage
-String encoded = SemverStringEncoder.getInstance().toValue(version);
-```
-
 ## Dependency
 
 ```xml
