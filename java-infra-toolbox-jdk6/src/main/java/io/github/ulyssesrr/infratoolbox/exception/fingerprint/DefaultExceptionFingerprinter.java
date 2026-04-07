@@ -5,8 +5,6 @@ import io.github.ulyssesrr.infratoolbox.hash.DefaultExceptionHasher;
 import io.github.ulyssesrr.infratoolbox.hash.JdkHasher32;
 import io.github.ulyssesrr.infratoolbox.hash.StatefulHasher;
 import io.github.ulyssesrr.infratoolbox.hash.StatefulHasherFactory;
-import io.github.ulyssesrr.infratoolbox.logging.adapter.AutoDetectLoggerAdapter;
-import io.github.ulyssesrr.infratoolbox.logging.adapter.LoggerAdapter;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +31,6 @@ public class DefaultExceptionFingerprinter implements ExceptionFingerprinter {
     @Builder.Default
     private final int maxRootCauseSearchDepth = 128;
 
-    @NonNull
-    private final LoggerAdapter loggerAdapter = new AutoDetectLoggerAdapter(DefaultExceptionFingerprinter.class);
-
     public static DefaultExceptionFingerprinter getInstance() {
         return Holder.INSTANCE;
     }
@@ -44,26 +39,23 @@ public class DefaultExceptionFingerprinter implements ExceptionFingerprinter {
         private static final DefaultExceptionFingerprinter INSTANCE = DefaultExceptionFingerprinter.builder().build();
     }
 
-    public String fingerprint(Throwable throwable) {
+    public String fingerprint(@NonNull Throwable throwable) {
         StatefulHasher hasher = hasherFactory.create();
-        try {
-            exceptionHasher.hash(hasher, throwable, 0);
 
-            Throwable current = throwable;
-            for (int i = 0; i < causalChainDepthLimit && (current = current.getCause()) != null; i++) {
-                int depth = current.getCause() == null ? -1 : i + 1;
-                exceptionHasher.hash(hasher, current, depth);
-            }
+        exceptionHasher.hash(hasher, throwable, 0);
 
-            boolean rootAlreadyIncluded = current.getCause() == null;
-            if (ensureRootCauseIncluded && !rootAlreadyIncluded) {
-                current = ThrowableUtils.getRootCause(current, maxRootCauseSearchDepth);
-                exceptionHasher.hash(hasher, current, -1);
-            }
-        } catch (Throwable t) {
-            if (loggerAdapter != null) {
-                loggerAdapter.error("Error while fingerprinting exception", t);
-            }
+        Throwable current = throwable;
+        for (int i = 0; i < causalChainDepthLimit && (current = current.getCause()) != null; i++) {
+            int depth = current.getCause() == null ? -1 : i + 1;
+            exceptionHasher.hash(hasher, current, depth);
+        }
+
+        // current == null at this point means that the causal chain is shorter than causalChainDepthLimit
+        // current.getCause() == null means causalChainDepthLimit was exactly equal to the causal chain length
+        boolean rootAlreadyIncluded = current == null || current.getCause() == null;
+        if (ensureRootCauseIncluded && !rootAlreadyIncluded) {
+            current = ThrowableUtils.getRootCause(current, maxRootCauseSearchDepth);
+            exceptionHasher.hash(hasher, current, -1);
         }
 
         return hasher.hash();

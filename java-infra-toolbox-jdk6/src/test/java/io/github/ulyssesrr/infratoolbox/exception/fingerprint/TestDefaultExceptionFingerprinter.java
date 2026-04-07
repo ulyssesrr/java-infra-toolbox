@@ -110,7 +110,34 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
     @Test
     public void testRootCauseIncluded() {
         Throwable e = new ExceptionThrower().createChain(2);
-        e.printStackTrace();
+
+
+        DefaultExceptionFingerprinter fingerprinterWithRoot = DefaultExceptionFingerprinter.builder()
+                .causalChainDepthLimit(1)
+                .ensureRootCauseIncluded(true)
+                .build();
+
+        DefaultExceptionFingerprinter fingerprinterWithDepth = DefaultExceptionFingerprinter.builder()
+                .causalChainDepthLimit(30)
+                .ensureRootCauseIncluded(false)
+                .build();
+
+        String fpWithRoot = fingerprinterWithRoot.fingerprint(e);
+        String fpWithDepth = fingerprinterWithDepth.fingerprint(e);
+        assertThat(fpWithRoot).isEqualTo(fpWithDepth);
+
+        DefaultExceptionFingerprinter fingerprinterWithBoth = DefaultExceptionFingerprinter.builder()
+                .causalChainDepthLimit(2)
+                .ensureRootCauseIncluded(true)
+                .build();
+
+        String fpWithBoth = fingerprinterWithBoth.fingerprint(e);
+        assertThat(fpWithBoth).isEqualTo(fpWithRoot);
+    }
+
+    @Test
+    public void testExceptionWithoutCause() {
+        Throwable e = new ExceptionThrower().createChain(0);
 
 
         DefaultExceptionFingerprinter fingerprinterWithRoot = DefaultExceptionFingerprinter.builder()
@@ -124,12 +151,5 @@ public class TestDefaultExceptionFingerprinter implements WithAssertions {
                 .build();
 
         assertThat(fingerprinterWithRoot.fingerprint(e)).isEqualTo(fingerprinterWithDepth.fingerprint(e));
-
-        DefaultExceptionFingerprinter fingerprinterWithBoth = DefaultExceptionFingerprinter.builder()
-                .causalChainDepthLimit(2)
-                .ensureRootCauseIncluded(true)
-                .build();
-
-        assertThat(fingerprinterWithRoot.fingerprint(e)).isEqualTo(fingerprinterWithBoth.fingerprint(e));
     }
 }
