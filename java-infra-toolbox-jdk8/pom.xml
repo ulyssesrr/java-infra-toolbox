@@ -7,7 +7,7 @@
   <parent>
     <groupId>io.github.ulyssesrr</groupId>
     <artifactId>java-infra-toolbox</artifactId>
-    <version>1.0.0-RC1</version>
+    <version>1.0.0-RC2</version>
   </parent>
 
   <artifactId>java-infra-toolbox-jdk8</artifactId>
